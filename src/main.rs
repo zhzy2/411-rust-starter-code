@@ -1,9 +1,5 @@
 //! L1 compiler toplevel
 
-#![feature(plugin)]
-#![plugin(rustlex)]
-#[allow(plugin_as_library)] extern crate rustlex;
-
 extern crate getopts;
 
 use std::env;
@@ -66,7 +62,7 @@ fn compile(input: &str, matches: &getopts::Matches) {
 
     let asm = codegen::translate(ir);
     let asm = asm.into_iter().map(|x| x.to_string()).collect::<Vec<_>>();
-    let asm = asm.connect("\n");
+    let asm = asm.join("\n");
     if matches.opt_present("dump-asm") {
         println!("{}", asm);
     }

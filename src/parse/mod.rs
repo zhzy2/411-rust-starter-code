@@ -78,7 +78,7 @@ pub fn parse(input: &Path) -> io::Result<ast::Program> {
         // We need to store here so error printing below can work.
         GENERATOR.with(|generator| (*generator.borrow()).clone().store());
 
-        let stmts = parser::parse_Program(tokens).unwrap_or_else(|err| { match err {
+        let stmts = parser::ProgramParser::new().parse(tokens).unwrap_or_else(|err| { match err {
             ParseError::UnrecognizedToken {token, expected} => match token {
                 Some((lo, tok, hi)) => {
                     let err =
@@ -101,6 +101,10 @@ pub fn parse(input: &Path) -> io::Result<ast::Program> {
             ParseError::User {error} => {
                 let err = format!("Parse error: {:?}", error);
                 parser_panic(err, DUMMY_MARK);
+            },
+            ParseError::InvalidToken {location} => {
+                parser_panic(String::from("Parse error: invalid token"),
+                             Mark::new(location, location));
             },
         } } );
 
